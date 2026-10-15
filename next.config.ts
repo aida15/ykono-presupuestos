@@ -1,8 +1,4 @@
 import type { NextConfig } from "next";
-import { resolveSupabase } from "./src/lib/env-resolve";
-
-// Valores para el login en el navegador (se incrustan al compilar).
-const supabase = resolveSupabase(process.env);
 
 /**
  * Cache Components queda desactivado a propósito: toda la aplicación es privada y
@@ -11,13 +7,8 @@ const supabase = resolveSupabase(process.env);
  */
 const nextConfig: NextConfig = {
   cacheComponents: false,
-  // La integración de Supabase en Vercel crea SUPABASE_URL / SUPABASE_ANON_KEY.
-  // El login se hace en el navegador, así que se exponen con el prefijo público.
-  // La clave anónima es pública por diseño (la seguridad la da RLS); nunca se expone la service role.
-  env: {
-    NEXT_PUBLIC_SUPABASE_URL: supabase.url,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: supabase.anonKey,
-  },
+  // Supabase se usa solo desde el servidor (incluido el login), así que su configuración
+  // se lee en tiempo de ejecución y no se incrusta en el JavaScript del navegador.
   // react-pdf usa módulos nativos de Node (fontkit, yoga); se ejecuta solo en servidor.
   serverExternalPackages: ["@react-pdf/renderer"],
   poweredByHeader: false,
