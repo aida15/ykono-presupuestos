@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+/*
+ * Tokens de YKONO tomados de los documentos oficiales:
+ * tinta #111111, verde lima #B4E600, superficie cálida #F3F3EE, fondo web #F5F4EF.
+ */
+@theme {
+  --color-ink: #111111;
+  --color-ink-2: #2a2a2a;
+  --color-ink-3: #4a4a47;
+  --color-muted: #6f6f6a;
+  --color-line: #e3e2dc;
+  --color-line-strong: #cfcec6;
+  --color-paper: #f5f4ef;
+  --color-surface: #f3f3ee;
+  --color-card: #ffffff;
+  --color-lime: #b4e600;
+  --color-lime-soft: #eef8c7;
+  --color-lime-ink: #3d4f00;
+  --color-warn: #b45309;
+  --color-warn-soft: #fff4dc;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdecea;
+  --color-info: #1d4ed8;
+  --color-info-soft: #e7eeff;
+
+  --font-sans: "Helvetica Neue", Helvetica, Arial, "Liberation Sans", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius-card: 14px;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Antetítulos en versalitas espaciadas, como en las propuestas de YKONO */
+.kicker {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
