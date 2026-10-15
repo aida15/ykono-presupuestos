@@ -1,4 +1,8 @@
 import type { NextConfig } from "next";
+import { resolveSupabase } from "./src/lib/env-resolve";
+
+// Valores para el login en el navegador (se incrustan al compilar).
+const supabase = resolveSupabase(process.env);
 
 /**
  * Cache Components queda desactivado a propósito: toda la aplicación es privada y
@@ -11,8 +15,8 @@ const nextConfig: NextConfig = {
   // El login se hace en el navegador, así que se exponen con el prefijo público.
   // La clave anónima es pública por diseño (la seguridad la da RLS); nunca se expone la service role.
   env: {
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || "",
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || "",
+    NEXT_PUBLIC_SUPABASE_URL: supabase.url,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: supabase.anonKey,
   },
   // react-pdf usa módulos nativos de Node (fontkit, yoga); se ejecuta solo en servidor.
   serverExternalPackages: ["@react-pdf/renderer"],
