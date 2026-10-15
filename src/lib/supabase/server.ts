@@ -1,7 +1,7 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { publicEnv } from "@/lib/env";
+import { supabaseEnv } from "@/lib/env";
 
 /**
  * Cliente de Supabase para Server Components, Server Actions y Route Handlers.
@@ -11,8 +11,8 @@ import { publicEnv } from "@/lib/env";
 export async function createSupabaseServerClient() {
   // cookies() primero: marca la ruta como dinámica antes de validar el entorno.
   const cookieStore = await cookies();
-  const { NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY } = publicEnv();
-  return createServerClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+  const { url, anonKey } = supabaseEnv();
+  return createServerClient(url, anonKey, {
     cookies: {
       getAll() {
         return cookieStore.getAll();

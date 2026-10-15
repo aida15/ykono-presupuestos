@@ -7,6 +7,13 @@ import type { NextConfig } from "next";
  */
 const nextConfig: NextConfig = {
   cacheComponents: false,
+  // La integración de Supabase en Vercel crea SUPABASE_URL / SUPABASE_ANON_KEY.
+  // El login se hace en el navegador, así que se exponen con el prefijo público.
+  // La clave anónima es pública por diseño (la seguridad la da RLS); nunca se expone la service role.
+  env: {
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || "",
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || "",
+  },
   // react-pdf usa módulos nativos de Node (fontkit, yoga); se ejecuta solo en servidor.
   serverExternalPackages: ["@react-pdf/renderer"],
   poweredByHeader: false,

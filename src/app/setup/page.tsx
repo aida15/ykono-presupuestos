@@ -16,7 +16,7 @@ export default function SetupPage() {
       <ol className="mt-8 list-decimal space-y-3 pl-5 text-sm leading-relaxed">
         <li>Crea un proyecto en Supabase y aplica las migraciones de <code>supabase/migrations</code> y <code>supabase/seed.sql</code>.</li>
         <li>
-          Añade en Vercel (o en <code>.env.local</code>) <code>NEXT_PUBLIC_SUPABASE_URL</code> y <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>.
+          Añade en Vercel (o en <code>.env.local</code>) <code>SUPABASE_URL</code> y <code>SUPABASE_ANON_KEY</code>, y vuelve a desplegar.
         </li>
         <li>Para la IA, añade <code>ANTHROPIC_API_KEY</code> (solo servidor).</li>
         <li>Crea la usuaria en Authentication → Users y ejecuta <code>supabase/bootstrap.sql</code>.</li>

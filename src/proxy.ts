@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { isSupabaseConfigured, supabaseEnv } from "@/lib/env";
 
 const PUBLIC_PATHS = ["/login", "/auth/callback", "/setup"];
 
@@ -9,19 +10,18 @@ const PUBLIC_PATHS = ["/login", "/auth/callback", "/setup"];
  * comprobar la sesión y la pertenencia al estudio en el servidor (lib/auth.ts).
  */
 export async function proxy(request: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const { pathname } = request.nextUrl;
   const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
-  if (!url || !key) {
+  if (!isSupabaseConfigured()) {
     // Sin configurar: mostramos la guía de puesta en marcha en lugar de fallar.
     if (pathname === "/setup") return NextResponse.next();
     return NextResponse.redirect(new URL("/setup", request.url));
   }
 
+  const { url, anonKey } = supabaseEnv();
   let response = NextResponse.next({ request });
-  const supabase = createServerClient(url, key, {
+  const supabase = createServerClient(url, anonKey, {
     cookies: {
       getAll() {
         return request.cookies.getAll();

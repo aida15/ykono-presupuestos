@@ -29,9 +29,11 @@ Herramienta interna de YKONO para preparar presupuestos y propuestas comerciales
 
 | Variable | Dónde se obtiene | Ámbito |
 |---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API | público |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API (anon / publishable) | público |
+| `SUPABASE_URL` | Supabase → Project Settings → API | público |
+| `SUPABASE_ANON_KEY` | Supabase → Project Settings → API (anon / publishable) | público |
 | `ANTHROPIC_API_KEY` | console.anthropic.com → API Keys | **solo servidor** |
+
+También valen `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Si cambias estas variables, **vuelve a desplegar**: el login del navegador las incorpora al compilar.
 
 3. Despliega. Las funciones de IA y PDF tienen `maxDuration` de 60–120 s (el plan Hobby permite hasta 60 s; con Pro no hay problema).
 
