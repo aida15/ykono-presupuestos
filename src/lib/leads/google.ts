@@ -7,7 +7,7 @@ import "server-only";
  */
 
 export function googleKey(): string | null {
-  return process.env.GOOGLE_API_KEY || process.env.GOOGLE_PLACES_API_KEY || null;
+  return (process.env.GOOGLE_API_KEY || process.env.GOOGLE_PI_KEY || process.env.GOOGLE_PLACES_API_KEY || "").trim() || null;
 }
 
 export type PlaceLite = {
