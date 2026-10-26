@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { FileText, Home, LogOut, Menu, Settings, Shapes, Users, X, Plus } from "lucide-react";
+import { FileText, Home, LogOut, Menu, Radar, Settings, Shapes, Users, X, Plus } from "lucide-react";
 import { Wordmark } from "@/components/brand";
 import { buttonClass, cx } from "@/components/ui";
 import { signOut } from "@/lib/actions/auth";
@@ -12,6 +12,7 @@ const NAV = [
   { href: "/", label: "Inicio", icon: Home, exact: true },
   { href: "/presupuestos", label: "Presupuestos", icon: FileText },
   { href: "/clientes", label: "Clientes", icon: Users },
+  { href: "/leads", label: "Leads", icon: Radar },
   { href: "/catalogo", label: "Catálogo y tarifas", icon: Shapes },
   { href: "/configuracion", label: "Configuración", icon: Settings },
 ];

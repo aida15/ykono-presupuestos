@@ -11,8 +11,8 @@
  * Los importes están en euros aquí por legibilidad; el script de seed los pasa a céntimos.
  */
 
-import type { Discipline } from "./disciplines";
-export { DISCIPLINE_LABEL, type Discipline } from "./disciplines";
+import type { Discipline } from "./disciplines.ts";
+export { DISCIPLINE_LABEL, type Discipline } from "./disciplines.ts";
 
 type SeedRule =
   | { method: "fixed"; price: number; status?: "estimate_pending" }
@@ -245,6 +245,31 @@ export const SEED_CATALOG: SeedCategory[] = [
         commercial: "Actualizaciones, copias de seguridad y pequeños cambios mensuales.",
         optional: true,
         rule: { method: "per_unit", price: 60, qty: 12 },
+      },
+      {
+        key: "web-refresh",
+        name: "Puesta al día de web existente",
+        unit: "proyecto",
+        commercial: "Revisión y corrección de la web actual: certificado de seguridad, ajustes para móvil, velocidad, textos legales y SEO básico, sin rehacerla.",
+        internal: "Para webs que sirven pero arrastran problemas técnicos. Si la base es muy antigua o no es adaptable a móvil, mejor web nueva.",
+        exclusions: ["Rediseño de la web", "Nuevas secciones o funcionalidades"],
+        rule: { method: "fixed", price: 450 },
+      },
+      {
+        key: "google-business",
+        name: "Ficha de Google Business",
+        unit: "ficha",
+        commercial: "Alta o recuperación de la ficha, categorías, horario, descripción, enlace a la web y una selección de fotos con la imagen de marca.",
+        exclusions: ["Gestión de reseñas", "Publicidad en Google"],
+        rule: { method: "fixed", price: 180 },
+      },
+      {
+        key: "pro-email",
+        name: "Correo profesional con dominio propio",
+        unit: "proyecto",
+        commercial: "Configuración del correo con vuestro dominio (nombre@vuestronegocio.com) y firma de email con la marca.",
+        exclusions: ["Cuota del proveedor de correo y del dominio"],
+        rule: { method: "fixed", price: 150 },
       },
     ],
   },

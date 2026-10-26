@@ -1,4 +1,4 @@
--- Generado por scripts/build-seed.ts — no editar a mano.
+-- Generado por scripts/build-seed.mts — no editar a mano.
 -- Catálogo inicial y configuración de YKONO. Idempotente.
 begin;
 insert into public.studios (id, name) values ('bb34c9d6-ba4d-4e1d-8bc4-f0c4a18b4e79', 'YKONO') on conflict (id) do nothing;
@@ -133,6 +133,24 @@ values ('16c0d7ae-f8d6-4dc0-8c9e-a149d3c0ed38', 'bb34c9d6-ba4d-4e1d-8bc4-f0c4a18
 on conflict (id) do nothing;
 insert into public.pricing_rules (id, studio_id, service_id, version, method, unit_price_cents, hourly_rate_cents, estimated_hours, default_quantity, addons, complexity, default_price_status, notes)
 values ('89bd92c0-c9d9-4741-8760-35019dcd8bfb', 'bb34c9d6-ba4d-4e1d-8bc4-f0c4a18b4e79', '16c0d7ae-f8d6-4dc0-8c9e-a149d3c0ed38', 1, 'per_unit', 6000, null, null, 1200, '[]'::jsonb, null, 'approved_rate', 'Tarifa inicial propuesta (octubre 2026). Revisar.')
+on conflict (id) do nothing;
+insert into public.services (id, studio_id, category_id, name, internal_description, commercial_description, unit, is_external_cost, default_external_treatment, is_optional_default, default_exclusions, default_deliverables, complements, sort_order)
+values ('395b53da-ff29-4d2f-82d7-35928e3908e7', 'bb34c9d6-ba4d-4e1d-8bc4-f0c4a18b4e79', '11e35063-deed-4414-8455-71b741a853f0', 'Puesta al día de web existente', 'Para webs que sirven pero arrastran problemas técnicos. Si la base es muy antigua o no es adaptable a móvil, mejor web nueva.', 'Revisión y corrección de la web actual: certificado de seguridad, ajustes para móvil, velocidad, textos legales y SEO básico, sin rehacerla.', 'proyecto', false, null, false, '["Rediseño de la web","Nuevas secciones o funcionalidades"]'::jsonb, '[]'::jsonb, '[]'::jsonb, 12)
+on conflict (id) do nothing;
+insert into public.pricing_rules (id, studio_id, service_id, version, method, unit_price_cents, hourly_rate_cents, estimated_hours, default_quantity, addons, complexity, default_price_status, notes)
+values ('c9f08efe-5291-4ce2-8516-8761c6ee614a', 'bb34c9d6-ba4d-4e1d-8bc4-f0c4a18b4e79', '395b53da-ff29-4d2f-82d7-35928e3908e7', 1, 'fixed', 45000, null, null, 100, '[]'::jsonb, null, 'approved_rate', 'Tarifa inicial propuesta (octubre 2026). Revisar.')
+on conflict (id) do nothing;
+insert into public.services (id, studio_id, category_id, name, internal_description, commercial_description, unit, is_external_cost, default_external_treatment, is_optional_default, default_exclusions, default_deliverables, complements, sort_order)
+values ('85f64942-38cc-42e0-83fb-bd3328688447', 'bb34c9d6-ba4d-4e1d-8bc4-f0c4a18b4e79', '11e35063-deed-4414-8455-71b741a853f0', 'Ficha de Google Business', null, 'Alta o recuperación de la ficha, categorías, horario, descripción, enlace a la web y una selección de fotos con la imagen de marca.', 'ficha', false, null, false, '["Gestión de reseñas","Publicidad en Google"]'::jsonb, '[]'::jsonb, '[]'::jsonb, 13)
+on conflict (id) do nothing;
+insert into public.pricing_rules (id, studio_id, service_id, version, method, unit_price_cents, hourly_rate_cents, estimated_hours, default_quantity, addons, complexity, default_price_status, notes)
+values ('fae4cfab-9859-4fed-850e-6ee730818b77', 'bb34c9d6-ba4d-4e1d-8bc4-f0c4a18b4e79', '85f64942-38cc-42e0-83fb-bd3328688447', 1, 'fixed', 18000, null, null, 100, '[]'::jsonb, null, 'approved_rate', 'Tarifa inicial propuesta (octubre 2026). Revisar.')
+on conflict (id) do nothing;
+insert into public.services (id, studio_id, category_id, name, internal_description, commercial_description, unit, is_external_cost, default_external_treatment, is_optional_default, default_exclusions, default_deliverables, complements, sort_order)
+values ('f653f40b-c2e0-4063-8a7e-1344cb26ec0a', 'bb34c9d6-ba4d-4e1d-8bc4-f0c4a18b4e79', '11e35063-deed-4414-8455-71b741a853f0', 'Correo profesional con dominio propio', null, 'Configuración del correo con vuestro dominio (nombre@vuestronegocio.com) y firma de email con la marca.', 'proyecto', false, null, false, '["Cuota del proveedor de correo y del dominio"]'::jsonb, '[]'::jsonb, '[]'::jsonb, 14)
+on conflict (id) do nothing;
+insert into public.pricing_rules (id, studio_id, service_id, version, method, unit_price_cents, hourly_rate_cents, estimated_hours, default_quantity, addons, complexity, default_price_status, notes)
+values ('fc0b4c88-77a0-4332-8b20-de808b904238', 'bb34c9d6-ba4d-4e1d-8bc4-f0c4a18b4e79', 'f653f40b-c2e0-4063-8a7e-1344cb26ec0a', 1, 'fixed', 15000, null, null, 100, '[]'::jsonb, null, 'approved_rate', 'Tarifa inicial propuesta (octubre 2026). Revisar.')
 on conflict (id) do nothing;
 insert into public.service_categories (id, studio_id, name, slug, description, sort_order) values ('35f4e78d-08fb-43a4-876a-f3ba08377f1e', 'bb34c9d6-ba4d-4e1d-8bc4-f0c4a18b4e79', 'Packaging y etiquetado', 'packaging', 'Envases y etiquetas listos para producción.', 3) on conflict (id) do nothing;
 insert into public.services (id, studio_id, category_id, name, internal_description, commercial_description, unit, is_external_cost, default_external_treatment, is_optional_default, default_exclusions, default_deliverables, complements, sort_order)

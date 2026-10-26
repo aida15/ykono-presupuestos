@@ -2,7 +2,7 @@ import "server-only";
 import { ZodError } from "zod";
 import { AuthError } from "@/lib/auth";
 
-export type ActionResult<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
+export type ActionResult<T = void> = { ok: true; data: T } | { ok: false; error: string };
 
 /** Ejecuta una acción de servidor y convierte errores en mensajes legibles (sin filtrar trazas). */
 export async function run<T>(fn: () => Promise<T>): Promise<ActionResult<T>> {

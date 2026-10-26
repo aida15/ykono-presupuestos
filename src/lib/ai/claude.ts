@@ -62,7 +62,7 @@ function isFormatRejection(e: unknown) {
 export async function callStructured<S extends z.ZodType>(opts: {
   model: string;
   system: string;
-  messages: { role: "user" | "assistant"; content: string }[];
+  messages: { role: "user" | "assistant"; content: string | Anthropic.ContentBlockParam[] }[];
   /** Nombre lógico de la respuesta (para mensajes y registros). */
   toolName: string;
   toolDescription: string;

@@ -53,8 +53,8 @@ describe("seed", () => {
       `select (select count(*)::int from services) s, (select count(*)::int from pricing_rules where is_current) r,
               (select count(*)::int from service_questions) q`,
     );
-    expect(r.rows[0].s).toBe(40);
-    expect(r.rows[0].r).toBe(40);
+    expect(r.rows[0].s).toBe(43);
+    expect(r.rows[0].r).toBe(43);
     expect(r.rows[0].q).toBeGreaterThan(50);
   });
 });
@@ -62,7 +62,7 @@ describe("seed", () => {
 describe("RLS", () => {
   it("la miembro ve el catálogo y una usuaria ajena no ve nada", async () => {
     const mine = await as(ALICE, () => db.query("select id from services"));
-    expect(mine.rows.length).toBe(40);
+    expect(mine.rows.length).toBe(43);
     const other = await as(MALLORY, () => db.query("select id from services"));
     expect(other.rows.length).toBe(0);
     const anon = await as(null, () => db.query("select studio_id from studio_settings"));
@@ -74,6 +74,24 @@ describe("RLS", () => {
       as(MALLORY, () =>
         db.query(`insert into clients (studio_id, trade_name) values ($1, 'Intruso')`, [studioId]),
       ),
+    ).rejects.toThrow(/row-level security/);
+  });
+
+  it("los leads solo los ve el estudio y no se duplican por ficha de Google", async () => {
+    await as(ALICE, () =>
+      db.query(`insert into leads (studio_id, source, place_id, name) values ($1, 'google_places', 'gp-1', 'Peluquería Ane')`, [studioId]),
+    );
+    await expect(
+      as(ALICE, () =>
+        db.query(`insert into leads (studio_id, source, place_id, name) values ($1, 'google_places', 'gp-1', 'Duplicado')`, [studioId]),
+      ),
+    ).rejects.toThrow(/duplicate|unique/);
+    const mine = await as(ALICE, () => db.query("select id from leads"));
+    expect(mine.rows.length).toBe(1);
+    const other = await as(MALLORY, () => db.query("select id from leads"));
+    expect(other.rows.length).toBe(0);
+    await expect(
+      as(MALLORY, () => db.query(`insert into leads (studio_id, source, name) values ($1, 'manual', 'Intruso')`, [studioId])),
     ).rejects.toThrow(/row-level security/);
   });
 
