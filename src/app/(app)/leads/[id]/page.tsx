@@ -142,6 +142,13 @@ export default async function LeadPage({ params }: PageProps<"/leads/[id]">) {
                 <img src={lead.screenshot} alt={`Captura móvil de ${lead.name}`} className="mx-auto max-h-[520px] rounded-lg border border-line" />
                 {lead.site?.performance != null ? <p className="mt-2 text-center text-xs text-muted">PageSpeed móvil: {lead.site.performance}/100</p> : null}
               </Card>
+            ) : lead.website && lead.analyzed_at ? (
+              <Card className="p-5">
+                <h2 className="mb-2 text-lg font-bold">Sin captura de la web</h2>
+                <p className="text-sm text-muted">
+                  {lead.site?.speedError ?? "No se pudo obtener la captura."} Sin captura, la IA no puede valorar logo, coherencia visual ni fotos.
+                </p>
+              </Card>
             ) : null}
           </div>
 

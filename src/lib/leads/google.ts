@@ -117,31 +117,45 @@ export async function getPlace(placeId: string): Promise<PlaceLite | null> {
   }
 }
 
-export type PageSpeed = { performance: number | null; screenshot: string | null; viewportOk: boolean | null };
+export type PageSpeed = { performance: number | null; screenshot: string | null; viewportOk: boolean | null; error: string | null };
 
-/** PageSpeed Insights en móvil: nota de rendimiento y captura. Tolerante a fallos y lento (hasta ~35 s). */
-export async function pageSpeed(url: string): Promise<PageSpeed | null> {
+/** PageSpeed Insights en móvil: nota de rendimiento y captura. Nunca lanza: si falla, devuelve el motivo. */
+export async function pageSpeed(url: string): Promise<PageSpeed> {
+  const fail = (error: string): PageSpeed => ({ performance: null, screenshot: null, viewportOk: null, error });
   const qs = new URLSearchParams({ url, strategy: "mobile", category: "performance", locale: "es" });
   const key = googleKey();
   if (key) qs.set("key", key);
   try {
-    const res = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${qs}`, { signal: AbortSignal.timeout(35_000) });
-    if (!res.ok) return null;
+    const res = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${qs}`, { signal: AbortSignal.timeout(45_000) });
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      console.error("[leads] PageSpeed", res.status, body.slice(0, 500));
+      if (res.status === 429)
+        return fail(key ? "Se ha agotado el cupo diario de PageSpeed de tu clave de Google." : "Google limita las pruebas sin clave: añade GOOGLE_API_KEY en Vercel.");
+      if (res.status === 403)
+        return fail("Tu clave de Google no tiene activada la «PageSpeed Insights API» (o tiene restricciones que la bloquean).");
+      if (res.status === 400 && /API key not valid/i.test(body)) return fail("La clave GOOGLE_API_KEY no es válida.");
+      return fail("Google no ha podido cargar la web para analizarla (suele pasar con webs muy lentas o que bloquean robots).");
+    }
     const j = (await res.json()) as {
       lighthouseResult?: {
+        runtimeError?: { code?: string; message?: string };
         categories?: { performance?: { score?: number | null } };
         audits?: Record<string, { score?: number | null; details?: { data?: string } }>;
       };
     };
     const lh = j.lighthouseResult;
     const perf = lh?.categories?.performance?.score;
+    const screenshot = lh?.audits?.["final-screenshot"]?.details?.data ?? null;
     return {
       performance: typeof perf === "number" ? Math.round(perf * 100) : null,
-      screenshot: lh?.audits?.["final-screenshot"]?.details?.data ?? null,
+      screenshot,
       viewportOk: typeof lh?.audits?.viewport?.score === "number" ? lh.audits.viewport.score === 1 : null,
+      error: screenshot ? null : lh?.runtimeError?.message ? `Google no pudo cargar la web: ${lh.runtimeError.message}` : "Google analizó la web pero no devolvió captura.",
     };
-  } catch {
-    return null;
+  } catch (e) {
+    const timeout = e instanceof Error && /timeout|abort/i.test(`${e.name} ${e.message}`);
+    return fail(timeout ? "Google ha tardado demasiado en analizar la web (más de 45 s). Prueba a reanalizar." : "No se ha podido contactar con PageSpeed.");
   }
 }
 

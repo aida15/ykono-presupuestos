@@ -52,7 +52,7 @@ export type LeadRow = {
   criteria: CriterionResult[];
   triggers: string[];
   manual_triggers: string[];
-  site: (Omit<SiteSignals, "textSample"> & { fetchError: string | null; httpsWorks: boolean; performance: number | null }) | null;
+  site: (Omit<SiteSignals, "textSample"> & { fetchError: string | null; httpsWorks: boolean; performance: number | null; speedError?: string | null }) | null;
   offers: LeadOffer[];
   pitch: LeadPitch | null;
   contact: LeadContact | null;
@@ -165,6 +165,7 @@ export async function collectLead(ctx: MemberContext, id: string): Promise<LeadR
     httpsWorks: fetched?.httpsWorks ?? false,
     place: placeState === "skipped" ? null : place ? { website: place.website, photoCount: place.photoCount, hasHours: place.hasHours } : "not_found",
     performance: psi?.performance ?? null,
+    speedError: psi?.error ?? null,
     viewportOk: psi?.viewportOk ?? null,
     basqueArea,
     brand: brandFromCriteria(lead.criteria),
@@ -187,7 +188,7 @@ export async function collectLead(ctx: MemberContext, id: string): Promise<LeadR
     category: lead.category ?? place?.category ?? null,
     maps_url: place?.mapsUrl ?? lead.maps_url,
     google: place ? place : placeState === "not_found" ? ({ not_found: true } as LeadRow["google"]) : lead.google,
-    site: site ? { ...(siteStored as Omit<SiteSignals, "textSample">), fetchError: fetched?.error ?? null, httpsWorks: fetched?.httpsWorks ?? false, performance: psi?.performance ?? null } : fetched ? ({ fetchError: fetched.error } as LeadRow["site"]) : null,
+    site: site ? { ...(siteStored as Omit<SiteSignals, "textSample">), fetchError: fetched?.error ?? null, httpsWorks: fetched?.httpsWorks ?? false, performance: psi?.performance ?? null, speedError: psi?.error ?? null } : fetched ? ({ fetchError: fetched.error, speedError: psi?.error ?? null } as LeadRow["site"]) : null,
     criteria,
     triggers: autoTriggers,
     score,

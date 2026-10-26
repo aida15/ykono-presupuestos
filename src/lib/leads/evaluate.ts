@@ -20,6 +20,8 @@ export type EvaluateInput = {
   /** null = no se ha consultado Google (sin clave); undefined no se usa. */
   place: PlaceInfo | "not_found" | null;
   performance: number | null;
+  /** Motivo por el que no hay medición de velocidad ni captura. */
+  speedError?: string | null;
   viewportOk: boolean | null;
   basqueArea: boolean;
   brand: BrandAssessment | null;
@@ -68,7 +70,7 @@ export function evaluate(input: EvaluateInput): { results: CriterionResult[]; au
     if (!s.emails.length) push("pro_email", null, "No se ve ningún email en la portada.");
     else push("pro_email", !s.genericEmail, s.genericEmail ? `El contacto es ${s.emails[0]}.` : `Contacto: ${s.emails[0]}.`);
 
-    if (input.performance === null) push("performance", null, "No se ha podido medir la velocidad.");
+    if (input.performance === null) push("performance", null, input.speedError ? `No se ha podido medir: ${input.speedError}` : "No se ha podido medir la velocidad.");
     else push("performance", input.performance >= 50, `PageSpeed móvil: ${input.performance}/100.`);
 
     const missing = [!s.title && "título", !s.metaDescription && "descripción", !s.h1 && "encabezado principal (H1)"].filter(Boolean);
@@ -97,9 +99,10 @@ export function evaluate(input: EvaluateInput): { results: CriterionResult[]; au
 
   // Marca (valoración visual de la IA)
   const b = input.brand;
-  push("logo_quality", b?.logo_quality.met ?? null, b?.logo_quality.evidence || "Sin valoración visual.", b ? "ai" : "auto");
-  push("visual_consistency", b?.visual_consistency.met ?? null, b?.visual_consistency.evidence || "Sin valoración visual.", b ? "ai" : "auto");
-  push("photo_quality", b?.photo_quality.met ?? null, b?.photo_quality.evidence || "Sin valoración visual.", b ? "ai" : "auto");
+  const noVisual = input.speedError && !b ? `Sin captura de la web: ${input.speedError}` : "Sin valoración visual.";
+  push("logo_quality", b?.logo_quality.met ?? null, b?.logo_quality.evidence || noVisual, b ? "ai" : "auto");
+  push("visual_consistency", b?.visual_consistency.met ?? null, b?.visual_consistency.evidence || noVisual, b ? "ai" : "auto");
+  push("photo_quality", b?.photo_quality.met ?? null, b?.photo_quality.evidence || noVisual, b ? "ai" : "auto");
 
   // Google
   const p = input.place;
