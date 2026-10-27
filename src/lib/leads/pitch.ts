@@ -18,8 +18,15 @@ export const LeadPitch = z.object({
   client_arguments: z.array(z.string().max(400)).max(6),
   objections: z.array(z.object({ objection: z.string().max(200), answer: z.string().max(400) })).max(4),
   opening_message: z.string().max(1500),
+  audit_intro: z.string().max(1500),
+  audit_closing: z.string().max(800),
 });
-export type LeadPitch = z.infer<typeof LeadPitch> & { generated_by: "ai" | "template" };
+export type LeadPitch = Omit<z.infer<typeof LeadPitch>, "audit_intro" | "audit_closing"> & {
+  /** Las fichas analizadas antes de existir la auditoría no los tienen. */
+  audit_intro?: string;
+  audit_closing?: string;
+  generated_by: "ai" | "template";
+};
 
 export type PitchContext = {
   name: string;
@@ -60,7 +67,9 @@ export function templatePitch(ctx: PitchContext): LeadPitch {
     "",
     `Mirando ${ctx.name} nos hemos fijado en que ${hook}. ${first ? CRITERIA_BY_ID[first.id].client : ""}`.trim(),
     "",
-    "¿Os parece si os enseñamos en una llamada corta qué cambiaríamos y cómo quedaría?",
+    `Hemos preparado una pequeña auditoría gratuita de vuestra presencia en internet (web, Google, redes e imagen) con lo que hemos visto, por qué importa y cómo lo mejoraríamos. Sin compromiso: es vuestra aunque no trabajemos juntos.`,
+    "",
+    "¿Os la enviamos?",
     "",
     `Un saludo,\n${ctx.studioName}`,
   ].join("\n");
@@ -76,7 +85,26 @@ export function templatePitch(ctx: PitchContext): LeadPitch {
       { objection: "Ya tenemos web.", answer: "La idea no es tirarla, sino que trabaje para vosotros: que se vea bien en el móvil, que Google la entienda y que la imagen sea coherente." },
     ],
     opening_message: message,
+    audit_intro: templateAuditIntro(ctx),
+    audit_closing: templateAuditClosing(ctx),
   };
+}
+
+/** Carta que abre la auditoría cuando no la ha redactado la IA. */
+export function templateAuditIntro(ctx: Pick<PitchContext, "name" | "website" | "studioName">): string {
+  const how = ctx.website
+    ? "hemos buscado el negocio en Google, hemos entrado en vuestra web desde el móvil y hemos revisado vuestra imagen y vuestras redes"
+    : "hemos buscado el negocio en Google y en redes, y hemos revisado cómo aparece vuestra imagen allí donde os encuentran";
+  return [
+    `Hola, equipo de ${ctx.name}:`,
+    `Hemos dedicado un rato a mirar ${ctx.name} como lo haría alguien que os busca por primera vez: ${how}.`,
+    "En estas páginas os contamos lo que hemos visto, sin tecnicismos: lo que ya está bien, lo que os puede estar haciendo perder clientes y cómo lo arreglaríamos nosotros. Hemos puesto alguna cifra para que veáis que no es una manía nuestra, siempre con su fuente.",
+    "Es vuestra: podéis quedárosla y usarla como queráis, aunque al final no trabajemos juntos.",
+  ].join("\n\n");
+}
+
+export function templateAuditClosing(ctx: Pick<PitchContext, "name">): string {
+  return `Si os apetece, lo vemos juntos en una llamada de veinte minutos: os enseñamos qué haríamos primero en ${ctx.name} y cuánto supondría, y vosotros decidís. Y si preferís hacerlo por vuestra cuenta, esperamos que esta auditoría os sirva de guía.`;
 }
 
 export function pitchSystemPrompt(ctx: PitchContext, hasImages: boolean) {
@@ -120,7 +148,11 @@ ${hasImages ? `1. brand: valora SOLO a partir de las imágenes adjuntas (captura
 4. internal_arguments (3–5): por qué es una buena oportunidad para el estudio, basados en los hallazgos y las señales de momento. Concretos, con el dato.
 5. client_arguments (3–5): beneficios para ELLOS, en su idioma, sin jerga, conectados con sus hallazgos. Sin promesas de resultados concretos.
 6. objections (2–3): objeciones probables y cómo responderlas con naturalidad.
-7. opening_message: primer mensaje para enviarles. Estructura obligatoria: (a) presentaros: quiénes somos y de dónde; (b) qué hacemos, en una frase; (c) un hallazgo concreto de su negocio, dicho con tacto y sin criticar; (d) una pregunta concreta y fácil de responder. Tono cercano y profesional, tuteo en plural (vosotros), máximo 120 palabras, firmado por ${ctx.studioName}. Sin precios ni descuentos, sin urgencias falsas, sin mencionar subvenciones ni Kit Digital.
+7. opening_message: primer mensaje para enviarles. Estructura obligatoria: (a) presentaros: quiénes somos y de dónde; (b) qué hacemos, en una frase; (c) un hallazgo concreto de su negocio, dicho con tacto y sin criticar; (d) ofrecerles una auditoría gratuita de su presencia en internet (web, Google, redes e imagen) que ya tenéis preparada, con lo que habéis visto, por qué importa y cómo lo mejoraríais, sin compromiso; (e) terminar preguntando si quieren que se la enviéis. Tono cercano y profesional, tuteo en plural (vosotros), máximo 130 palabras, firmado por ${ctx.studioName}. Sin precios ni descuentos, sin urgencias falsas, sin mencionar subvenciones ni Kit Digital.
+8. audit_intro: carta breve (90–140 palabras, 3 o 4 párrafos separados por una línea en blanco) que abre la auditoría gratuita en PDF. Empieza por «Hola, equipo de ${ctx.name}:». Cuenta qué habéis revisado (Google, su web desde el móvil, su imagen y sus redes; si no tiene web, no digas que la habéis visitado), menciona algún detalle concreto y positivo del negocio que se desprenda de los datos, explica que el documento recoge lo que está bien, lo que les puede estar restando clientes y cómo lo arreglaríais, y que es suya aunque no trabajéis juntos.
+9. audit_closing: 40–70 palabras que cierran la auditoría invitando a una llamada corta para ver qué haríais primero, sin presión.
 
-No inventes datos que no estén arriba. No menciones reseñas, valoraciones, número de empleados ni facturación.`;
+ESTILO DE audit_intro Y audit_closing: tiene que sonar escrito a mano por una diseñadora que ha mirado el negocio con calma: frases cortas y naturales, primera persona del plural, vosotros. Nada de frases hechas de marketing («en la era digital», «potenciar», «llevar al siguiente nivel», «soluciones integrales»), ni superlativos, ni exclamaciones, ni emojis.
+
+No inventes datos que no estén arriba. No incluyas cifras ni estadísticas en ningún texto. No menciones reseñas, valoraciones, número de empleados ni facturación.`;
 }

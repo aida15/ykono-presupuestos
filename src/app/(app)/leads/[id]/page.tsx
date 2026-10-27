@@ -5,7 +5,7 @@ import { requireMember } from "@/lib/auth";
 import { loadLead } from "@/lib/leads/engine";
 import { AXIS_LABEL, CRITERIA, TRIGGERS, scoreLead, type Axis } from "@/lib/leads/criteria";
 import { formatEUR } from "@/lib/domain/money";
-import { Alert, Badge, Card, cx } from "@/components/ui";
+import { Alert, Badge, Card, buttonClass, cx } from "@/components/ui";
 import { hostOf, LeadStatusBadge, ScoreBadge } from "../lead-ui";
 import { CriterionRow, TriggerToggle, LeadActions, CopyBlock, NotesBox, ReanalyzeButton } from "./lead-client";
 
@@ -217,6 +217,27 @@ export default async function LeadPage({ params }: PageProps<"/leads/[id]">) {
                         ))}
                       </dl>
                     </div>
+                  ) : null}
+                </Card>
+
+                <Card className="p-5">
+                  <h2 className="mb-1 text-lg font-bold">Auditoría gratuita</h2>
+                  <p className="mb-3 text-sm text-muted">
+                    PDF para enviarles: lo que hemos revisado, cada problema con por qué importa (con cifras y fuentes) y cómo lo resolveríamos.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <a className={buttonClass("lime", "sm")} href={`/api/leads/${lead.id}/audit`} target="_blank" rel="noreferrer">
+                      Ver auditoría
+                    </a>
+                    <a className={buttonClass("secondary", "sm")} href={`/api/leads/${lead.id}/audit?precios=1`} target="_blank" rel="noreferrer">
+                      Con precios orientativos
+                    </a>
+                    <a className={buttonClass("ghost", "sm")} href={`/api/leads/${lead.id}/audit?descargar=1`}>
+                      Descargar
+                    </a>
+                  </div>
+                  {!pitch.audit_intro ? (
+                    <p className="mt-2 text-xs text-muted">La carta de presentación usa la plantilla. Genera de nuevo el argumentario para que la IA la personalice.</p>
                   ) : null}
                 </Card>
 

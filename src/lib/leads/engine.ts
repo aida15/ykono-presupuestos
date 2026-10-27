@@ -257,7 +257,7 @@ export async function pitchLead(ctx: MemberContext, id: string): Promise<LeadRow
         toolName: "argumentario",
         toolDescription: "Valoración de marca, argumentos de venta y primer mensaje para el lead.",
         schema: LeadPitch,
-        maxTokens: 3000,
+        maxTokens: 4500,
       });
       pitch = { ...out, brand: images.length ? out.brand : null, generated_by: "ai" };
     } catch (e) {

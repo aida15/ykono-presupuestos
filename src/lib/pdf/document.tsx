@@ -17,11 +17,11 @@ import type { PdfData } from "./types";
 // Sin guionado automático (el de react-pdf es inglés y parte mal el castellano).
 Font.registerHyphenationCallback((word) => [word]);
 
-const INK = "#111111";
-const INK2 = "#2A2A2A";
-const MUTED = "#6F6F6A";
-const SOFT = "#F3F3EE";
-const LINE = "#E3E2DC";
+export const INK = "#111111";
+export const INK2 = "#2A2A2A";
+export const MUTED = "#6F6F6A";
+export const SOFT = "#F3F3EE";
+export const LINE = "#E3E2DC";
 
 const s = StyleSheet.create({
   page: { paddingTop: 54, paddingBottom: 64, paddingHorizontal: 48, fontFamily: "Helvetica", fontSize: 10, color: INK },
@@ -43,7 +43,7 @@ const s = StyleSheet.create({
   num: { fontFamily: "Helvetica-Bold" },
 });
 
-function Wordmark({ width, color }: { width: number; color: string }) {
+export function Wordmark({ width, color }: { width: number; color: string }) {
   const h = (width * LOGO_WORDMARK.height) / LOGO_WORDMARK.width;
   return (
     <Svg width={width} height={h} viewBox={`0 0 ${LOGO_WORDMARK.width} ${LOGO_WORDMARK.height}`}>
@@ -52,7 +52,7 @@ function Wordmark({ width, color }: { width: number; color: string }) {
   );
 }
 
-function Mark({ height, color }: { height: number; color: string }) {
+export function Mark({ height, color }: { height: number; color: string }) {
   const w = (height * LOGO_MARK.width) / LOGO_MARK.height;
   return (
     <Svg width={w} height={height} viewBox={`0 0 ${LOGO_MARK.width} ${LOGO_MARK.height}`}>
